@@ -1,0 +1,36 @@
+---
+description: arkive — port the prototype, don't redesign it
+globs: ["app/**"]
+alwaysApply: true
+---
+
+# source of truth
+- UI + behavior: `design/arkive-v2.html`. open it, read the `Component` class. port structure, inline styles, state transitions and copy exactly. never "improve" the design.
+- data model: `docs/STATE-SCHEMA.md`. every state key has a home (convex table / react state / derived). don't invent a third place.
+- acceptance: `docs/HANDOFF.md` §journeys. a slice is done when its journey clicks through.
+
+# stack
+- tauri 2 + react 18 + vite (port 1420) + convex. typescript strict.
+- **no tailwind. no css-in-js libs.** inline `style={{}}` + css variables in `App.css` (tokens only: colors, fonts, radii).
+- fonts: 'Space Grotesk' (UI), 'IBM Plex Mono' (paths, hashes, labels, metadata).
+- palette: shell #080808 · panels #0d0d0d/#141414 · borders #191919/#232323 · text #f2f2f2/#c8c8c8/#8a8a8a/#5c5c5c · light tray #f1f1ef · ONE accent #ff5a1f. amber #d9a13a (waiting), green #3a7a4a/#6ec48a (done), red #cf4a3a (failed) — status only, never decoration.
+- lowercase copy, terse, no exclamation marks, no emoji.
+
+# architecture invariants
+- every knowledge thing is a BrainObject (see schema). same id from graph, vault tree, canvas, chat citation, search.
+- originals (files, audio) are immutable + checksummed on write. derived objects reference them by hash.
+- AI-derived anything lands in `proposals` (state: pending) — never directly in documents. accept = mutation that writes the object AND an audit event.
+- canvas stores position/size/grouping only. cards reference BrainObjects. deleting a card never deletes an object.
+- manifests are hash-pinned doc lists. rollback = pointer move. compile is idempotent.
+- agent grants are per-run leases. `pause` stops lease issuance; it never touches data. changing model/harness must not touch identity, memory or grants.
+- ▣ executable capabilities: separate consent per person per capability. declined capabilities are structurally absent from the installed bundle, not flagged off.
+- every state-changing mutation appends to `auditEvents`. no silent writes.
+
+# adapters (stub now, real later)
+`app/src/adapters/`: IdentityProvider · RelayAdapter · EventVerifier · EventProjector · WorkflowEngine · NotificationProvider. interfaces only. no nostr, no buzz, no key storage, no "signed"/"encrypted" claims in copy. label simulated things "simulated".
+
+# working style
+- one slice per session, in the order in README. PR each.
+- prompt shape: "port `[data-screen-label='vault']` from design/arkive-v2.html into `VaultPanel.tsx` over `useDocuments()`. match structure + inline styles. state per STATE-SCHEMA §vault. typecheck."
+- keep hooks: useWorkspace · useChatMessages · useManifests · useDocuments · useAuditFeed · chat.sendMessage. extend, don't replace.
+- `npm run typecheck` must pass before you say done.
