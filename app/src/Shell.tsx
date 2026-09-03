@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ChatPanel } from './ChatPanel';
 
 // port target: design/arkive-v2.html — header + nav + main area. see docs/HANDOFF.md §1.
 export type View = 'chat' | 'vault' | 'agents' | 'manifests' | 'relay' | 'audit';
@@ -58,14 +59,11 @@ export function Shell() {
       </header>
 
       <main style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
-        {/* TODO port: ChatPanel · CaptureDock(capDock) · VaultTree/ReadingView · ProposalReview · Library · Shared · Sources · Policies · AgentNetwork/AgentLog · Work · Manifests · RelayHealth · SystemPanel · Audit */}
-        <Placeholder label={view === 'vault' ? 'vault · ' + vaultTab : view === 'agents' ? 'agents · ' + agentsTab : view === 'relay' ? 'relay · ' + relayTab : view} />
+        {/* TODO port: CaptureDock(capDock) · VaultTree/ReadingView · ProposalReview · Library · Shared · Sources · Policies · AgentNetwork/AgentLog · Work · Manifests · RelayHealth · SystemPanel · Audit */}
+        {view === 'chat'
+          ? <ChatPanel room="dm:hermes" onOpenCapture={() => setCapDock(true)} onOpenDoc={() => { setView('vault'); setVaultTab('files'); }} />
+          : <Placeholder label={view === 'vault' ? 'vault · ' + vaultTab : view === 'agents' ? 'agents · ' + agentsTab : view === 'relay' ? 'relay · ' + relayTab : view} />}
         {view === 'chat' && capDock && <Placeholder label="capture dock" overlay onClose={() => setCapDock(false)} />}
-        {view === 'chat' && !capDock && (
-          <button onClick={() => setCapDock(true)} style={{ position: 'absolute', right: 18, top: 0, ...chipStyle }}>
-            <span style={{ width: 6, height: 6, borderRadius: 999, background: O, display: 'inline-block', marginRight: 6 }} />capture
-          </button>
-        )}
       </main>
 
       {graphOpen && (

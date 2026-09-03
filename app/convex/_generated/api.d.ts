@@ -8,9 +8,13 @@
  * @module
  */
 
+import type * as chat from "../chat.js";
 import type * as documents from "../documents.js";
+import type * as lib from "../lib.js";
+import type * as messages from "../messages.js";
 import type * as proposals from "../proposals.js";
 import type * as seed from "../seed.js";
+import type * as workspace from "../workspace.js";
 
 import type {
   ApiFromModules,
@@ -19,9 +23,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  chat: typeof chat;
   documents: typeof documents;
+  lib: typeof lib;
+  messages: typeof messages;
   proposals: typeof proposals;
   seed: typeof seed;
+  workspace: typeof workspace;
 }>;
 
 /**
