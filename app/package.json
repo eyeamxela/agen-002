@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "tauri": "tauri",
-    "convex:dev": "convex dev"
+    "convex:dev": "convex dev",
+    "seed": "convex run seed:run"
   },
   "dependencies": {
     "react": "^18.3.1",
