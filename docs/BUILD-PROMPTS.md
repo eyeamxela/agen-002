@@ -18,6 +18,14 @@ every prompt assumes the agent has read `.cursor/rules/arkive.mdc` first — say
 
 > port `[data-screen-label='chat']` from `design/arkive-v2.html` into `app/src/ChatPanel.tsx`. header (title, hermes · mini · launchd / manifest id / vault head / ctx chip / `● capture` chip), message list with citations (click → open doc in vault), typing indicator, composer with ttl chip + deny toggle + send. data: `useChatMessages(room)` over `messages`; `chat.sendMessage` action appends the op message then an ag reply from the prototype's `REPLIES` (rotate, substitute `{n}` with scope doc count). match structure, inline styles and copy exactly. commit "02 chat".
 
+## 02b · rooms rail
+
+> port the rooms rail from `design/arkive-chat-canvas-2a-2b.html` into `app/src/RoomsRail.tsx`, mounted to the right of the room's chat/canvas projection. derive rooms and waiting/running summaries from existing `rooms`, `manifests`, `runs`, `brainObjects`, `contextSummaries`, `tierPolicy`, and `auditEvents` rows. the rail writes nothing; every row deep-links to the page that owns the action. `⌘\\` toggles it and `userSettings.opt.railOpen` remembers the choice. status copy must say `simulated` or `not connected` until a real runtime health check exists. commit "02b rail".
+
+## 02c · room canvas
+
+> port option 2b into `app/src/RoomCanvasView.tsx`, rendered in place of chat+tray when `roomView[room]==='canvas'`. keep the existing graph overlay and `CanvasMode` untouched: room canvas projects one room; graph projects the vault. three bands show memory, a compact `<ChatPanel />`, and agents/tools from existing rows. connectors are derived SVG paths, never stored. canvas actions reuse existing page mutations or deep-link to their owner. persist only `roomView`, `railOpen`, and `canvasLayers` in `userSettings.opt`; hiding a layer never changes access. label Hermes and every runtime truthfully as simulated/not connected until an adapter health check succeeds. commit "02c room canvas".
+
 ## 03 · four-card tray
 
 > port the light tray under chat: exactly four cards — docs in scope · context weight · provenance coverage · attention — with the stacked tier bar, progress bar, two gauges, arrow controls, and click → detail sheet. formulas from `docs/STATE-SCHEMA.md §derived` as a `useScopeMetrics(room)` hook. band thresholds 50/70/90. zero exposure reads as success. responsive: 4 → 2×2 → 1 column. commit "03 tray".

@@ -19,7 +19,7 @@ const fmtTs = (at: number) => {
   return String(d.getUTCHours()).padStart(2, '0') + ':' + String(d.getUTCMinutes()).padStart(2, '0');
 };
 
-export function ChatPanel({ room, onOpenCapture, onOpenDoc }: { room: string; onOpenCapture: () => void; onOpenDoc: (path: string) => void }) {
+export function ChatPanel({ room, onOpenCapture, onOpenDoc, compact = false, onExitCompact, contextOpenRequest = 0 }: { room: string; onOpenCapture: () => void; onOpenDoc: (path: string) => void; compact?: boolean; onExitCompact?: () => void; contextOpenRequest?: number }) {
   const [draft, setDraft] = useState('');
   const [deny, setDeny] = useState(true);
   const [ttl, setTtl] = useState('session');
@@ -39,6 +39,10 @@ export function ChatPanel({ room, onOpenCapture, onOpenDoc }: { room: string; on
   const ctxSummaries = useQuery(api.panels.contextSummaries, { room });
   const sendMessage = useMutation(api.chat.sendMessage);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (contextOpenRequest > 0) { setCtxOpen(true); setPicker(false); }
+  }, [contextOpenRequest]);
 
   // effective ctx versions = db rows (on overridden locally) + locally summarized versions
   const ctxVersions: CtxVersionRow[] = (ctxSummaries ?? [])
@@ -128,12 +132,19 @@ export function ChatPanel({ room, onOpenCapture, onOpenDoc }: { room: string; on
   }));
 
   return (
-    <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+    <div data-chat-mode={compact ? 'compact' : 'full'} style={{ flex: 1, minHeight: 0, minWidth: 0, height: compact ? '100%' : undefined, display: 'flex', flexDirection: 'column', position: 'relative' }}>
       <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
-        <div style={{ padding: '0 18px 12px 18px', flex: 'none', display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
+        {compact ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '10px 12px', borderBottom: '1px solid #191919', flex: 'none' }}>
+            <span style={{ width: 5, height: 5, borderRadius: 999, background: '#8a8a8a' }} />
+            <span style={{ fontFamily: mono, fontSize: 10.5, color: '#e8e8e8' }}>{room}</span>
+            <span style={{ fontFamily: mono, fontSize: 8, color: '#5c5c5c' }}>{inScopeCount} docs · simulated</span>
+            <button onClick={onExitCompact} style={{ marginLeft: 'auto', border: 'none', background: 'transparent', padding: 0, fontFamily: mono, fontSize: 8, color: '#8a8a8a', cursor: 'pointer' }}>⤢ open in chat</button>
+          </div>
+        ) : <div style={{ padding: '0 18px 12px 18px', flex: 'none', display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 26, fontWeight: 500, letterSpacing: '-.02em', lineHeight: 1, whiteSpace: 'nowrap' }}>graph brain</div>
           <div style={{ display: 'flex', gap: 12, fontFamily: mono, fontSize: 10, color: '#5c5c5c', whiteSpace: 'nowrap', flex: '1 1 auto', minWidth: 0, overflow: 'hidden' }}>
-            <div style={{ flex: '0 1 auto', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>hermes · mini · launchd</div>
+            <div style={{ flex: '0 1 auto', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{room} · simulated</div>
             <div style={{ color: '#2e2e2e', flex: 'none' }}>/</div>
             <div style={{ flex: '0 1 auto', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{manifestIdLabel}</div>
             <div style={{ color: '#2e2e2e', flex: 'none' }}>/</div>
@@ -144,22 +155,22 @@ export function ChatPanel({ room, onOpenCapture, onOpenDoc }: { room: string; on
           <button onClick={onOpenCapture} title="capture — voice, note, task, file" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, padding: '5px 11px', borderRadius: 6, background: '#141414', border: 'none', fontFamily: mono, fontSize: 9.5, color: '#c8c8c8', cursor: 'pointer', flex: 'none' }}>
             <div style={{ width: 6, height: 6, borderRadius: 999, background: O }} />capture
           </button>
-        </div>
+        </div>}
 
-        <div ref={scrollRef} data-chat-scroll="1" className="ark-scroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '6px 18px 18px 18px', display: 'flex', flexDirection: 'column', gap: 18 }}>
-          {(msgs ?? []).map((m) => {
+        <div ref={scrollRef} data-chat-scroll="1" className="ark-scroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: compact ? '10px 12px' : '6px 18px 18px 18px', display: 'flex', flexDirection: 'column', gap: compact ? 8 : 18 }}>
+          {(compact ? (msgs ?? []).slice(-3) : (msgs ?? [])).map((m) => {
             const op = m.role === 'op';
             return (
-              <div key={m._id} style={{ display: 'flex', flexDirection: 'column', gap: 7, maxWidth: 720, alignSelf: op ? 'flex-end' : 'flex-start', animation: 'arkRise .22s ease-out' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+              <div key={m._id} style={{ display: 'flex', flexDirection: 'column', gap: compact ? 4 : 7, maxWidth: compact ? '92%' : 720, alignSelf: op ? 'flex-end' : 'flex-start', animation: 'arkRise .22s ease-out' }}>
+                {!compact && <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                   <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: op ? '#6a6a6a' : O }}>{op ? 'operator' : 'hermes'}</div>
                   <div style={{ fontFamily: mono, fontSize: 9, color: '#3e3e3e' }}>{fmtTs(m.at)}</div>
                   <div style={{ fontFamily: mono, fontSize: 9, color: '#3e3e3e' }}>{m.snap ? '· ' + m.snap + ' in scope' : ''}</div>
-                </div>
-                <div style={{ fontSize: 15, lineHeight: 1.55, color: op ? '#0d0d0d' : '#e8e8e8', background: op ? '#efefec' : '#111111', padding: '11px 15px', borderRadius: 11, border: '1px solid ' + (op ? '#efefec' : '#1c1c1c'), textWrap: 'pretty' }}>{m.text}</div>
+                </div>}
+                <div style={{ fontSize: compact ? 11 : 15, lineHeight: 1.55, color: op && !compact ? '#0d0d0d' : '#e8e8e8', background: op ? (compact ? '#1c1c1c' : '#efefec') : '#111111', padding: compact ? '7px 10px' : '11px 15px', borderRadius: compact ? 9 : 11, border: '1px solid ' + (op && !compact ? '#efefec' : '#1c1c1c'), textWrap: 'pretty' }}>{m.text}</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                   {m.cites.map((c) => (
-                    <button key={c} onClick={() => onOpenDoc(c)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderRadius: 5, background: '#111', border: '1px solid #1c1c1c', fontFamily: mono, fontSize: 9.5, color: '#7a7a7a', cursor: 'pointer' }}>
+                    <button key={c} onClick={() => onOpenDoc(c)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px', borderRadius: 5, background: '#111', border: '1px solid #1c1c1c', fontFamily: mono, fontSize: compact ? 8 : 9.5, color: '#7a7a7a', cursor: 'pointer', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       <div style={{ width: 3, height: 3, borderRadius: 999, background: O }} />{c}
                     </button>
                   ))}
@@ -170,16 +181,16 @@ export function ChatPanel({ room, onOpenCapture, onOpenDoc }: { room: string; on
           {typing && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: mono, fontSize: 10, color: '#5c5c5c' }}>
               <div style={{ width: 5, height: 5, borderRadius: 999, background: O, animation: 'arkPulse 1s ease-in-out infinite' }} />
-              resolving manifest → reading {inScopeCount} docs at pinned hashes
+              simulated reply · {inScopeCount} docs in scope
             </div>
           )}
         </div>
 
-        <div style={{ flex: 'none', padding: '0 18px 18px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {picker && (
+        <div style={{ flex: 'none', padding: compact ? '0 12px 12px' : '0 18px 18px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {!compact && picker && (
             <ScopePicker docs={sm.all} sel={sel} onToggle={toggleSel} onAddAll={addAllShown} onClear={clearSel} onClose={() => setPicker(false)} />
           )}
-          {ctxOpen && (
+          {!compact && ctxOpen && (
             <CtxOverlay
               room={room}
               versions={ctxVersions}
@@ -191,7 +202,7 @@ export function ChatPanel({ room, onOpenCapture, onOpenDoc }: { room: string; on
               onClose={() => setCtxOpen(false)}
             />
           )}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, height: 44, padding: '0 12px', borderRadius: 10, background: '#101010', border: '1px solid ' + barBorder, overflow: 'hidden' }}>
+          {!compact && <div style={{ display: 'flex', alignItems: 'center', gap: 12, height: 44, padding: '0 12px', borderRadius: 10, background: '#101010', border: '1px solid ' + barBorder, overflow: 'hidden' }}>
             <button onClick={() => setDeny((d) => !d)} title="deny by tier — with no manifest active the agent sees canon only." style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 'none', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
               <div style={{ width: 6, height: 6, borderRadius: 999, background: barDot, flex: 'none' }} />
               <div style={{ fontFamily: mono, fontSize: 10, color: '#c8c8c8', whiteSpace: 'nowrap' }}>{barTitle}</div>
@@ -212,33 +223,33 @@ export function ChatPanel({ room, onOpenCapture, onOpenDoc }: { room: string; on
               ))}
               <button style={{ padding: '5px 11px', borderRadius: 5, background: '#1c1c1c', border: 'none', fontFamily: mono, fontSize: 9.5, color: '#d8d8d8', cursor: 'pointer', whiteSpace: 'nowrap' }}>inspect</button>
             </div>
-          </div>
+          </div>}
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 4px 0 14px', height: 52, borderRadius: 11, background: '#111', border: '1px solid #1e1e1e' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: compact ? 6 : 10, padding: compact ? '0 4px 0 9px' : '0 4px 0 14px', height: compact ? 34 : 52, borderRadius: compact ? 8 : 11, background: '#111', border: '1px solid #1e1e1e' }}>
             <div style={{ fontFamily: mono, fontSize: 11, color: '#4a4a4a', flex: 'none' }}>›</div>
             <input
               value={draft}
               onChange={(e) => {
                 // prototype onDraft — typing '@' opens the scope picker and swallows the character
                 const v = e.target.value;
-                if (v.endsWith('@') && !picker) { setDraft(v.slice(0, -1)); setPicker(true); }
+                if (!compact && v.endsWith('@') && !picker) { setDraft(v.slice(0, -1)); setPicker(true); }
                 else setDraft(v);
               }}
               onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
-              placeholder="message dm:hermes — or `x note:` to capture"
-              style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', color: '#f2f2f2', fontSize: 14, fontFamily: mono }}
+              placeholder={compact ? 'ask within this room…' : 'message ' + room + ' — or `x note:` to capture'}
+              style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', color: '#f2f2f2', fontSize: compact ? 10 : 14, fontFamily: mono }}
             />
-            <div style={{ fontFamily: mono, fontSize: 9, color: '#3a3a3a', flex: 'none' }}>{tokenLabel}</div>
-            <button onClick={send} aria-label="send" style={{ width: 40, height: 40, flex: 'none', borderRadius: 8, background: draft.trim() ? O : '#1a1a1a', border: 'none', display: 'grid', placeItems: 'center', cursor: 'pointer', color: draft.trim() ? '#0a0a0a' : '#5c5c5c' }}>
+            {!compact && <div style={{ fontFamily: mono, fontSize: 9, color: '#3a3a3a', flex: 'none' }}>{tokenLabel}</div>}
+            <button onClick={send} aria-label="send" style={{ width: compact ? 24 : 40, height: compact ? 24 : 40, flex: 'none', borderRadius: compact ? 5 : 8, background: draft.trim() ? O : '#1a1a1a', border: 'none', display: 'grid', placeItems: 'center', cursor: 'pointer', color: draft.trim() ? '#0a0a0a' : '#5c5c5c' }}>
               <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M3 8h9.5M8.6 4 12.8 8l-4.2 4" /></svg>
             </button>
           </div>
         </div>
       </div>
 
-      <Tray sm={sm} onOpenMetric={setMetric} />
+      {!compact && <Tray sm={sm} onOpenMetric={setMetric} />}
 
-      {metric && <MetricSheet data={sm.met[metric]} manifestIdLabel={manifestIdLabel} onClose={() => setMetric(null)} />}
+      {!compact && metric && <MetricSheet data={sm.met[metric]} manifestIdLabel={manifestIdLabel} onClose={() => setMetric(null)} />}
     </div>
   );
 }

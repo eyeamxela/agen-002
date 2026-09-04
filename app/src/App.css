@@ -17,4 +17,46 @@ html, body, #root { margin: 0; height: 100%; background: var(--bg-shell); color:
 @keyframes arkFade { from { opacity: 0 } to { opacity: 1 } }
 @keyframes arkRise { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
 @keyframes arkPulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+@keyframes arkRoomDash { to { stroke-dashoffset: -24; } }
+
+.ark-room-workspace { flex: 1; min-height: 0; min-width: 0; display: flex; gap: 10px; padding: 0 12px 10px; }
+.ark-room-workspace-main { flex: 1; min-width: 0; min-height: 0; display: flex; }
+.ark-room-rail { flex: none; min-height: 0; border-radius: 14px; background: #0d0d0d; border: 1px solid #191919; display: flex; flex-direction: column; overflow: hidden; }
+.ark-room-rail--open { width: 252px; }
+.ark-room-rail--collapsed { width: 44px; padding: 6px; align-items: center; gap: 5px; }
+.ark-room-canvas { flex: 1; min-width: 0; min-height: 0; overflow: auto; border-radius: 14px; background: #0d0d0d; border: 1px solid #191919; }
+.ark-room-canvas-stage { position: relative; min-height: 780px; padding: 18px; display: grid; grid-template-rows: minmax(160px, auto) 270px minmax(170px, auto); align-content: space-between; gap: 46px; background-color: #0d0d0d; background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px); background-size: 22px 22px; overflow: hidden; }
+.ark-room-canvas-stage--floor { box-shadow: inset 0 0 90px rgba(255,90,31,.045); }
+.ark-room-band-section { position: relative; z-index: 2; min-width: 0; }
+.ark-room-canvas-band { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.ark-room-card { height: 100%; min-height: 146px; border-radius: 12px; background: #0d0d0d; border: 1px solid #232323; padding: 12px 13px; display: flex; flex-direction: column; gap: 6px; }
+.ark-room-canvas-chat { position: relative; z-index: 3; justify-self: center; width: min(400px, 100%); height: 270px; border-radius: 12px; background: #0d0d0d; border: 1px solid #2a2a2a; box-shadow: 0 0 0 1px rgba(255,90,31,.2), 0 30px 70px rgba(0,0,0,.65); overflow: hidden; }
+.ark-room-connectors { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+.ark-room-link--running { animation: arkRoomDash 1.4s linear infinite; }
+.ark-room-audit-strip { position: relative; z-index: 3; border: 1px solid #232323; background: #111; color: #8a8a8a; border-radius: 7px; padding: 7px 10px; font-family: var(--font-mono); font-size: 8.5px; cursor: pointer; }
+.ark-room-floor-note { position: absolute; left: 18px; bottom: 8px; z-index: 2; font-family: var(--font-mono); font-size: 8px; color: #3f332d; }
+.ark-room-canvas-footnote { position: absolute; right: 18px; bottom: 8px; z-index: 2; font-family: var(--font-mono); font-size: 8px; color: #4a4a4a; }
+.ark-room-canvas-mobile-summary { display: none; }
+
+@media (max-width: 1199px) {
+  .ark-room-rail--open { width: 210px; }
+  .ark-room-canvas-stage { min-height: 970px; grid-template-rows: auto 270px auto; }
+  .ark-room-canvas-band { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 767px) {
+  .ark-room-workspace { padding: 0 8px 8px; display: block; position: relative; }
+  .ark-room-workspace-main { height: 100%; }
+  .ark-room-rail--open { position: absolute; z-index: 30; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 68%; box-shadow: 0 -24px 60px rgba(0,0,0,.65); }
+  .ark-room-rail--collapsed { position: absolute; z-index: 30; right: 14px; bottom: 14px; width: 44px; max-height: 54px; }
+  .ark-room-canvas-mobile-summary { display: block; position: sticky; top: 0; z-index: 8; padding: 8px 10px; background: #111; border-bottom: 1px solid #191919; font-family: var(--font-mono); font-size: 8.5px; color: #8a8a8a; }
+  .ark-room-canvas-stage { min-height: 0; display: flex; flex-direction: column; gap: 14px; padding: 12px 12px 46px; }
+  .ark-room-canvas-band { grid-template-columns: 1fr; }
+  .ark-room-canvas-chat { order: 2; width: 100%; height: 330px; }
+  .ark-room-band-section:first-of-type { order: 1; }
+  .ark-room-band-section:nth-of-type(2) { order: 3; }
+  .ark-room-connectors { display: none; }
+  .ark-room-canvas-footnote { left: 12px; right: 12px; bottom: 12px; text-align: center; }
+}
+
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

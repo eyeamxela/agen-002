@@ -55,7 +55,7 @@ documents in the prototype (`allNodes()`) = brainObjects where type in (source, 
 | capMode, rec, recT, recMarks, recTv, capVal, capDone, capTitle, capRoute | R + T `recordings` | recordings {audioBlobRef, checksum, durationS, markers[], transcript{version, state, segments[]}} |
 | canvasMode, canvasSel | R + T `canvasLayout` | layout {canvasId, objectId, x, y, w, h, group} |
 | wfStep | R (prototype) → T `workflowRuns` later | |
-| opt{}, theme, density | T `userSettings` | |
+| opt{}, theme, density, roomView{}, railOpen, canvasLayers{} | T `userSettings` | room presentation only; hiding a layer never changes retrieval or access |
 | metric, inspect, picker, pickQ, ctxOpen, traceOpen | R | sheets/overlays |
 | clock | X | prototype clock; use real timestamps |
 | REPLIES, TIERS, NAMES, CENTERS, SIM, DOCBODIES, CNV, WF, BTPL, TRS, RO | X | seed data / physics constants. graph SIM constants port verbatim into the (locked) graph. |

@@ -11,7 +11,7 @@ sub-tabs render as second-tier pills inline after their parent when active:
 - agents → network · work
 - relay → health · overview · policies · integrations · storage · models · advanced
 
-state: `view`, `vaultTab`, `agentsTab`, `relayTab`, `graphOpen`, `graphMode` (graph|canvas), `capDock`, `settingsOpen`, `pane`. all react state in Shell.
+state: `view`, `vaultTab`, `agentsTab`, `relayTab`, `graphOpen`, `graphMode` (graph|canvas), `capDock`, `settingsOpen`, `room`, `roomView`, `railOpen`, `canvasLayers`, `pane`. room presentation preferences persist through `userSettings.opt`; object and permission state does not.
 
 ## 2 · screen inventory  (`data-screen-label` → component)
 
@@ -49,6 +49,8 @@ D **install safely** — vault/library → nezu-desk pack update v3 → "apply k
 E **agent work with evidence** — agents/work → assign t1 → hermes → run #414 running (grant = task's cited docs only) → done with evidence → agents/network drawer → runs → "what it saw" → agents approval banner → inspect preflight → approve.
 
 F **team governance** — settings/team → share dialog → kiln guest, view+comment, 30d, no download → effective-access preview → grant (audit) → simulate kiln → revoke → impact panel → audit row.
+
+G **room chat ↔ canvas** — open a room → rooms rail shows its manifest-derived memory, enabled context summary, actual deny-event count, and simulated run/gate state → `open canvas view` → memory/room/agents bands match the same rows → inspect a connector label → approve or open preflight through the existing owner action → `← back to chat` → messages and tray remain unchanged. Hermes must read `simulated` or `not connected` until a real adapter health check succeeds.
 
 ## 4 · four-card tray (chat)
 

@@ -7,7 +7,9 @@ this repo is the implementation of the arkive prototype. the design is the spec.
 ## layout
 
 - `design/arkive-v2.html` — the standalone prototype. **source of truth for UI + behavior.** open it in a browser; every screen, state and handler is readable in its `Component` class.
-- `docs/HANDOFF.md` — screen inventory, six journeys (acceptance tests), engineering annotations, deferred list.
+- `design/arkive-chat-canvas-2a-2b.html` — the preserved room chat/canvas design reference; it supplements rather than replaces the canonical prototype.
+- `docs/HANDOFF.md` — screen inventory, seven journeys (acceptance tests), engineering annotations, deferred list.
+- `docs/CHAT-CANVAS-HANDOVER.md` — preserved design intent and acceptance notes for the rooms rail and room-scoped canvas projection.
 - `docs/STATE-SCHEMA.md` — BrainObject model + every prototype state key → its convex home.
 - `docs/GRAPH-BRAIN-ARCHITECTURE.md` — the original architecture spec.
 - `.cursor/rules/arkive.mdc` — rules cursor follows while porting.

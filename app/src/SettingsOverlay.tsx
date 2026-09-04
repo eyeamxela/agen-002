@@ -319,14 +319,14 @@ export function SettingsOverlay({ onClose }: { onClose: () => void }) {
       title: 'agents', sub: 'which agent runtimes arkive can use on this machine.',
       blocks: [
         { rows: [
-          { k: 'hermes agent', d: 'launchd service on mini. the brain.', isPill: true, v: 'ready', pillBg: '#14261a', pillFg: '#6ec48a' },
-          { k: 'claude code', isPill: true, v: 'ready', pillBg: '#14261a', pillFg: '#6ec48a' },
-          { k: 'codex', isPill: true, v: 'ready', pillBg: '#14261a', pillFg: '#6ec48a' },
-          { k: 'nezu agent', d: 'desk agent. reads dashboards, writes briefs.', isPill: true, v: 'ready', pillBg: '#14261a', pillFg: '#6ec48a' },
+          { k: 'hermes agent', d: 'prototype identity only. no runtime adapter or health check is configured.', isPill: true, v: 'simulated', pillBg: '#2a1a12', pillFg: O },
+          { k: 'claude code', d: 'available as a future harness adapter; not connected to this app.', isPill: true, v: 'not connected', pillBg: '#1c1c1c', pillFg: '#8a8a8a' },
+          { k: 'codex', d: 'available as a future harness adapter; not connected to this app.', isPill: true, v: 'not connected', pillBg: '#1c1c1c', pillFg: '#8a8a8a' },
+          { k: 'nezu agent', d: 'prototype identity only. no runtime adapter is configured.', isPill: true, v: 'simulated', pillBg: '#2a1a12', pillFg: O },
           { k: 'goose', d: 'arkive talks to goose through the goose cli.', isBtn: true, btnLabel: 'install cli', btnBg: '#e8e8e4', btnFg: '#111' }
         ] },
         { title: 'defaults', rows: [
-          { k: 'default harness', isValue: true, v: 'hermes agent' },
+          { k: 'default harness', isValue: true, v: 'none · prototype simulation' },
           { k: 'default model', d: 'identity, memory and grants survive a swap — logged as a version event.', isSeg: true, opts: seg(hermesModel, ['haiku', 'sonnet', 'opus'], (v) => { void agentSetModel({ key: 'hermes', model: v }); }) },
           { k: 'approval gate', d: 'anything that sends or publishes waits for you — it surfaces on the agents tab.', isToggle: true, on: opt.approvalGate, onToggle: setOpt('approvalGate') },
           { k: 'standing rules', d: 'loaded before anything else in every turn.', isValue: true, v: 'canon/standing-rules.md' },
