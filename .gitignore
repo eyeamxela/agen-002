@@ -4,3 +4,4 @@ dist
 app/src-tauri/target
 app/src-tauri/gen/schemas
 .DS_Store
+.gitnexus

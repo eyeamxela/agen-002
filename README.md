@@ -1,4 +1,4 @@
-# agen // 002 — arkive
+# ARKIVE // 002
 
 sovereign relay + spatial context selection + a voice you can talk to.
 
